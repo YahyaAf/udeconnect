@@ -6,7 +6,7 @@ export default function Category() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [success, setSuccess] = useState("");
-  const [editingId, setEditingId] = useState(null); 
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -61,6 +61,21 @@ export default function Category() {
     setEditingId(category.id);
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      axios
+        .delete(`http://127.0.0.1:8000/api/v1/categories/${id}`)
+        .then(() => {
+          setSuccess("Category deleted successfully!");
+          fetchCategories();
+        })
+        .catch((err) => {
+          console.error("Error deleting category:", err);
+          setSuccess("Error deleting category");
+        });
+    }
+  };
+
   const cancelEdit = () => {
     setName("");
     setEditingId(null);
@@ -107,14 +122,25 @@ export default function Category() {
       ) : (
         <ul className="list-disc pl-5">
           {categories.map((category) => (
-            <li key={category.id} className="mb-2 flex items-center justify-between">
+            <li
+              key={category.id}
+              className="mb-2 flex items-center justify-between"
+            >
               <span>{category.name}</span>
-              <button
-                onClick={() => handleEdit(category)}
-                className="ml-4 text-blue-600 hover:underline"
-              >
-                Edit
-              </button>
+              <div className="space-x-2">
+                <button
+                  onClick={() => handleEdit(category)}
+                  className="text-blue-600 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(category.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
