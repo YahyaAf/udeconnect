@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Course() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -20,7 +22,15 @@ export default function Course() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Liste des Cours</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Liste des Cours</h1>
+        <button
+          onClick={() => navigate("/courses/create")}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          + Ajouter un cours
+        </button>
+      </div>
 
       {loading ? (
         <p className="text-center text-gray-500">Chargement des cours...</p>

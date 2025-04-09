@@ -6,6 +6,7 @@ import Footer from './components/footer';
 import Home from './home/Home';
 import Category from './categories/Category';
 import Course from './courses/Course';
+import CourseForm from './courses/CourseForm';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/category" element={<Category />} />
               <Route path="/course" element={<Course />} />
+              <Route path="/courses/create" element={<CourseForm />} /> 
             </Routes>
           </main>
 
