@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; 
 
 export default function CourseForm() {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ export default function CourseForm() {
   const [status, setStatus] = useState("open");
   const [tags, setTags] = useState([]);
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate(); 
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -55,6 +57,7 @@ export default function CourseForm() {
       .then(() => {
         setSuccess("Cours ajouté avec succès !");
         resetForm();
+        navigate("/course"); 
       })
       .catch((err) => {
         console.error("Erreur lors de l’ajout :", err);
