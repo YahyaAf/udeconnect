@@ -5,6 +5,7 @@ export default function Category() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
+  const [parentId, setParentId] = useState(""); // 👈 nouveau champ
   const [success, setSuccess] = useState("");
   const [editingId, setEditingId] = useState(null);
 
@@ -28,16 +29,22 @@ export default function Category() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const data = {
+      name,
+      parent_id: parentId || null,
+    };
+
     const endpoint = editingId
       ? `http://127.0.0.1:8000/api/v1/categories/${editingId}`
       : "http://127.0.0.1:8000/api/v1/categories";
 
     const method = editingId ? axios.put : axios.post;
 
-    method(endpoint, { name })
+    method(endpoint, data)
       .then(() => {
         setSuccess(`Category ${editingId ? "updated" : "created"} successfully!`);
         setName("");
+        setParentId("");
         setEditingId(null);
         fetchCategories();
       })
@@ -49,6 +56,7 @@ export default function Category() {
 
   const handleEdit = (category) => {
     setName(category.name);
+    setParentId(category.parent_id || ""); // 👈 Pré-remplir le select
     setEditingId(category.id);
   };
 
@@ -69,6 +77,7 @@ export default function Category() {
 
   const cancelEdit = () => {
     setName("");
+    setParentId("");
     setEditingId(null);
     setSuccess("");
   };
@@ -77,7 +86,7 @@ export default function Category() {
     return (
       <ul className="pl-4 space-y-2">
         {categoriesList.map((category) => (
-          <li key={category.id} className={`bg-white p-3 rounded shadow-sm border ${level > 0 ? 'ml-4' : ''}`}>
+          <li key={category.id} className={`bg-white p-3 rounded shadow-sm border`}>
             <div className="flex items-center justify-between">
               <span className="font-medium text-gray-800">{category.name}</span>
               <div className="space-x-2">
@@ -108,15 +117,29 @@ export default function Category() {
     <div className="max-w-2xl mx-auto p-6 bg-gray-100 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Category Manager</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center gap-4 mb-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter category name"
-          className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
+
+        <select
+          value={parentId}
+          onChange={(e) => setParentId(e.target.value)}
+          className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">No parent category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
         <div className="flex gap-2">
           <button
             type="submit"
