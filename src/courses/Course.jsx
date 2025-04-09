@@ -64,6 +64,13 @@ export default function Course() {
                 <p><strong>Catégorie :</strong> {course.category?.name || "-"}</p>
                 <p><strong>Sous-catégorie :</strong> {course.subcategory?.name || "-"}</p>
               </div>
+
+              <button
+                onClick={() => navigate(`/courses/update/${course.id}`)} // Redirect to the update form
+                className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              >
+                Mettre à jour
+              </button>
             </div>
           ))}
         </div>

@@ -21,7 +21,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/category" element={<Category />} />
               <Route path="/course" element={<Course />} />
-              <Route path="/courses/create" element={<CourseForm />} /> 
+              <Route path="/courses/create" element={<CourseForm />} />
+              <Route path="/courses/update/:id" element={<CourseForm />} /> 
             </Routes>
           </main>
 
@@ -29,6 +30,7 @@ function App() {
         </div>
       </Router>
     </>
+
   )
 }
 

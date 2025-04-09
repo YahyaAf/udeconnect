@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, useParams } from "react-router-dom"; 
 
 export default function CourseForm() {
+  const { id } = useParams(); 
+  const navigate = useNavigate(); 
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
@@ -12,7 +15,7 @@ export default function CourseForm() {
   const [status, setStatus] = useState("open");
   const [tags, setTags] = useState([]);
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(true); 
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -25,7 +28,25 @@ export default function CourseForm() {
     axios.get("http://127.0.0.1:8000/api/v1/tags").then((res) => {
       setAllTags(res.data.data || res.data);
     });
-  }, []);
+
+    if (id) {
+      axios.get(`http://127.0.0.1:8000/api/v1/courses/${id}`).then((res) => {
+        const course = res.data;
+        console.log(course)
+        setName(course.name);
+        setDescription(course.description);
+        setDuration(course.duration);
+        setDifficultyLevel(course.difficulty_level);
+        setCategoryId(course.category_id);
+        setSubcategoryId(course.subcategory_id);
+        setStatus(course.status);
+        setTags(course.tags ? course.tags.map(tag => tag.id) : []);
+        setLoading(false); 
+      });
+    } else {
+      setLoading(false); 
+    }
+  }, [id]);
 
   useEffect(() => {
     if (categoryId) {
@@ -43,26 +64,41 @@ export default function CourseForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios
-      .post("http://127.0.0.1:8000/api/v1/courses", {
-        name,
-        description,
-        duration,
-        difficulty_level: difficultyLevel,
-        category_id: categoryId,
-        subcategory_id: subcategoryId,
-        status,
-        tags,
-      })
-      .then(() => {
-        setSuccess("Cours ajouté avec succès !");
-        resetForm();
-        navigate("/course"); 
-      })
-      .catch((err) => {
-        console.error("Erreur lors de l’ajout :", err);
-        setSuccess("Erreur lors de l’ajout du cours.");
-      });
+    const courseData = {
+      name,
+      description,
+      duration,
+      difficulty_level: difficultyLevel,
+      category_id: categoryId,
+      subcategory_id: subcategoryId,
+      status,
+      tags,
+    };
+
+    if (id) {
+      axios
+        .put(`http://127.0.0.1:8000/api/v1/courses/${id}`, courseData)
+        .then(() => {
+          setSuccess("Cours mis à jour avec succès !");
+          navigate("/course");  
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la mise à jour :", err);
+          setSuccess("Erreur lors de la mise à jour du cours.");
+        });
+    } else {
+      axios
+        .post("http://127.0.0.1:8000/api/v1/courses", courseData)
+        .then(() => {
+          setSuccess("Cours ajouté avec succès !");
+          resetForm();
+          navigate("/course");
+        })
+        .catch((err) => {
+          console.error("Erreur lors de l’ajout :", err);
+          setSuccess("Erreur lors de l’ajout du cours.");
+        });
+    }
   };
 
   const resetForm = () => {
@@ -83,9 +119,13 @@ export default function CourseForm() {
     setTags(selected);
   };
 
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
+
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md mt-10">
-      <h2 className="text-2xl font-bold mb-4">Ajouter un nouveau cours</h2>
+      <h2 className="text-2xl font-bold mb-4">{id ? "Modifier le cours" : "Ajouter un nouveau cours"}</h2>
 
       {success && <p className="text-green-600 mb-4">{success}</p>}
 
@@ -185,7 +225,7 @@ export default function CourseForm() {
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Ajouter le cours
+          {id ? "Mettre à jour le cours" : "Ajouter le cours"}
         </button>
       </form>
     </div>
