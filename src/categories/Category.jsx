@@ -6,8 +6,8 @@ export default function Category() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [success, setSuccess] = useState("");
+  const [editingId, setEditingId] = useState(null); 
 
-  // Fetch categories on load
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -16,7 +16,7 @@ export default function Category() {
     axios
       .get("http://127.0.0.1:8000/api/v1/categories")
       .then((response) => {
-        setCategories(response.data.data || response.data); // in case you wrapped it in 'data'
+        setCategories(response.data.data || response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -25,26 +25,53 @@ export default function Category() {
       });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios
-      .post("http://127.0.0.1:8000/api/v1/categories", { name })
-      .then((res) => {
-        setSuccess("Category created successfully!");
-        setName("");
-        fetchCategories(); 
-      })
-      .catch((err) => {
-        console.error("Error creating category:", err);
-        setSuccess("Error creating category");
-      });
+    if (editingId) {
+      axios
+        .put(`http://127.0.0.1:8000/api/v1/categories/${editingId}`, { name })
+        .then(() => {
+          setSuccess("Category updated successfully!");
+          setName("");
+          setEditingId(null);
+          fetchCategories();
+        })
+        .catch((err) => {
+          console.error("Error updating category:", err);
+          setSuccess("Error updating category");
+        });
+    } else {
+      axios
+        .post("http://127.0.0.1:8000/api/v1/categories", { name })
+        .then(() => {
+          setSuccess("Category created successfully!");
+          setName("");
+          fetchCategories();
+        })
+        .catch((err) => {
+          console.error("Error creating category:", err);
+          setSuccess("Error creating category");
+        });
+    }
+  };
+
+  const handleEdit = (category) => {
+    setName(category.name);
+    setEditingId(category.id);
+  };
+
+  const cancelEdit = () => {
+    setName("");
+    setEditingId(null);
+    setSuccess("");
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Category List</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {editingId ? "Edit Category" : "Add Category"}
+      </h2>
 
       <form onSubmit={handleSubmit} className="mb-6">
         <input
@@ -59,8 +86,18 @@ export default function Category() {
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Add Category
+          {editingId ? "Update" : "Add"}
         </button>
+
+        {editingId && (
+          <button
+            type="button"
+            onClick={cancelEdit}
+            className="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
+            Cancel
+          </button>
+        )}
       </form>
 
       {success && <p className="text-green-600 mb-4">{success}</p>}
@@ -70,7 +107,15 @@ export default function Category() {
       ) : (
         <ul className="list-disc pl-5">
           {categories.map((category) => (
-            <li key={category.id}>{category.name}</li>
+            <li key={category.id} className="mb-2 flex items-center justify-between">
+              <span>{category.name}</span>
+              <button
+                onClick={() => handleEdit(category)}
+                className="ml-4 text-blue-600 hover:underline"
+              >
+                Edit
+              </button>
+            </li>
           ))}
         </ul>
       )}
