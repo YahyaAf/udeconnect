@@ -31,8 +31,7 @@ export default function CourseForm() {
 
     if (id) {
       axios.get(`http://127.0.0.1:8000/api/v1/courses/${id}`).then((res) => {
-        const course = res.data;
-        console.log(course)
+        const course = res.data.data;
         setName(course.name);
         setDescription(course.description);
         setDuration(course.duration);
@@ -122,7 +121,7 @@ export default function CourseForm() {
   if (loading) {
     return <div>Loading...</div>; 
   }
-
+  
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md mt-10">
       <h2 className="text-2xl font-bold mb-4">{id ? "Modifier le cours" : "Ajouter un nouveau cours"}</h2>
