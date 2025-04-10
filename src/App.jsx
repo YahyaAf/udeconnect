@@ -8,6 +8,7 @@ import Category from './categories/Category';
 import Course from './courses/Course';
 import CourseForm from './courses/CourseForm';
 import ShowCourse from './courses/ShowCourse';
+import Statistique from './statistiques/Statistique';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/courses/create" element={<CourseForm />} />
               <Route path="/courses/update/:id" element={<CourseForm />} /> 
               <Route path="/courses/:id" element={<ShowCourse />} /> 
+              <Route path="/statistique" element={<Statistique />} /> 
             </Routes>
           </main>
 

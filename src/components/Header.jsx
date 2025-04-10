@@ -31,6 +31,14 @@ export default function Header() {
               Course
             </Link>
           </li>
+          <li>
+            <Link
+              to="/statistique"
+              className="hover:text-blue-400 transition duration-200"
+            >
+              Statistique
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
