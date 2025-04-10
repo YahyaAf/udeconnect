@@ -40,9 +40,8 @@ export default function CourseForm() {
         setCategoryId(course.category?.id || '');
         setSubcategoryId(course.subcategory?.id || '');
         setStatus(course.status);
-        setTags(course.tags ? course.tags.map(tag => tag) : []);
-    
-        setLoading(false);
+        setTags(course.tags ? course.tags.map(tag => tag.id) : []);
+        setLoading(false);    
       });
     } else {
       setLoading(false);
@@ -128,6 +127,9 @@ export default function CourseForm() {
 
   if (loading) {
     return <div>Loading...</div>; 
+  }
+  if(id){
+    console.log(allTags)
   }
   
   return (
