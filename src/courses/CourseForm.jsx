@@ -32,19 +32,22 @@ export default function CourseForm() {
     if (id) {
       axios.get(`http://127.0.0.1:8000/api/v1/courses/${id}`).then((res) => {
         const course = res.data.data;
+        // console.log(course)
         setName(course.name);
         setDescription(course.description);
         setDuration(course.duration);
         setDifficultyLevel(course.difficulty_level);
-        setCategoryId(course.category_id);
-        setSubcategoryId(course.subcategory_id);
+        setCategoryId(course.category?.id || '');
+        setSubcategoryId(course.subcategory?.id || '');
         setStatus(course.status);
-        setTags(course.tags ? course.tags.map(tag => tag.id) : []);
-        setLoading(false); 
+        setTags(course.tags ? course.tags.map(tag => tag) : []);
+    
+        setLoading(false);
       });
     } else {
-      setLoading(false); 
+      setLoading(false);
     }
+    
   }, [id]);
 
   useEffect(() => {
@@ -66,7 +69,7 @@ export default function CourseForm() {
     const courseData = {
       name,
       description,
-      duration,
+      duration: String(duration),
       difficulty_level: difficultyLevel,
       category_id: categoryId,
       subcategory_id: subcategoryId,
@@ -82,9 +85,14 @@ export default function CourseForm() {
           navigate("/course");  
         })
         .catch((err) => {
-          console.error("Erreur lors de la mise à jour :", err);
+          if (err.response) {
+            console.error("Erreur API :", err.response.data);
+          } else {
+            console.error("Erreur inconnue :", err.message);
+          }
           setSuccess("Erreur lors de la mise à jour du cours.");
         });
+        
     } else {
       axios
         .post("http://127.0.0.1:8000/api/v1/courses", courseData)
@@ -202,9 +210,9 @@ export default function CourseForm() {
           className="w-full border p-2 rounded"
           required
         >
-          <option value="open">Ouvert</option>
-          <option value="in_progress">Fermé</option>
-          <option value="completed">Fermé</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
         </select>
 
         <select
