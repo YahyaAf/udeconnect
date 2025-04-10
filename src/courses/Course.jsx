@@ -20,6 +20,17 @@ export default function Course() {
       });
   }, []);
 
+  const deleteCourse = (id) => {
+    axios
+      .delete(`http://127.0.0.1:8000/api/v1/courses/${id}`)
+      .then(() => {
+        setCourses(courses.filter((course) => course.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting course:", error);
+      });
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen bg-gray-100">
       <div className="flex justify-between items-center mb-8">
@@ -72,6 +83,13 @@ export default function Course() {
               >
                 Mettre à jour
               </button>
+
+              <button
+                  onClick={() => deleteCourse(course.id)}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                >
+                  Supprimer
+                </button>
             </div>
           ))}
         </div>
