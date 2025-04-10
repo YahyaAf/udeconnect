@@ -7,6 +7,7 @@ import Home from './home/Home';
 import Category from './categories/Category';
 import Course from './courses/Course';
 import CourseForm from './courses/CourseForm';
+import ShowCourse from './courses/ShowCourse';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
               <Route path="/course" element={<Course />} />
               <Route path="/courses/create" element={<CourseForm />} />
               <Route path="/courses/update/:id" element={<CourseForm />} /> 
+              <Route path="/courses/:id" element={<ShowCourse />} /> 
             </Routes>
           </main>
 

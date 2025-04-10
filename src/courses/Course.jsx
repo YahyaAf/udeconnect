@@ -90,6 +90,12 @@ export default function Course() {
                 >
                   Supprimer
                 </button>
+                <button
+                  onClick={() => navigate(`/courses/${course.id}`)}
+                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                >
+                  Voir
+                </button>
             </div>
           ))}
         </div>
