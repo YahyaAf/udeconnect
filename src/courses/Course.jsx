@@ -5,11 +5,17 @@ import { useNavigate } from "react-router-dom";
 export default function Course() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchCourses = (query = "") => {
+    setLoading(true);
+    const url = query
+      ? `http://127.0.0.1:8000/api/v1/courses/search?q=${query}`
+      : `http://127.0.0.1:8000/api/v1/courses`;
+
     axios
-      .get("http://127.0.0.1:8000/api/v1/courses")
+      .get(url)
       .then((response) => {
         setCourses(response.data.data || response.data);
         setLoading(false);
@@ -18,7 +24,17 @@ export default function Course() {
         console.error("Error fetching courses:", error);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchCourses(); 
   }, []);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    fetchCourses(value); 
+  };
 
   const deleteCourse = (id) => {
     axios
@@ -34,6 +50,15 @@ export default function Course() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black-50 to-indigo-50 py-10 px-4">
       <div className="max-w-7xl mx-auto">
+        <div className="mb-6 flex justify-between items-center">
+          <input
+            type="text"
+            placeholder="Rechercher un cours..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-black to-indigo-600 shadow-lg mb-10">
           <div className="absolute inset-0 bg-gradient-to-r from-black to-indigo-500/30 backdrop-blur-sm"></div>
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center p-8">
